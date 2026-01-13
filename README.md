@@ -32,7 +32,7 @@ cargo install tmux-shortcut-helper
 ### From source
 
 ```bash
-git clone https://github.com/takahashinaoki/tmux-shortcut-helper
+git clone https://github.com/nyanko3141592/tmux-shortcut-helper
 cd tmux-shortcut-helper
 cargo install --path .
 ```

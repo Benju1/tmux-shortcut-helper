@@ -1,0 +1,13 @@
+[package]
+name = "tmux-shortcut-helper"
+version = "0.1.0"
+edition = "2021"
+description = "A lightweight tmux shortcut helper like zellij"
+license = "MIT"
+
+[dependencies]
+
+[profile.release]
+lto = true
+strip = true
+opt-level = "z"

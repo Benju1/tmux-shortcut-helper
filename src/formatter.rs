@@ -9,7 +9,6 @@ impl Formatter {
         Self { use_color }
     }
 
-    /// Zellij-style: Ctrl + <key> MODE format
     fn format_mode_button(&self, key: &str, name: &str) -> String {
         if self.use_color {
             format!(
@@ -21,7 +20,26 @@ impl Formatter {
         }
     }
 
-    /// Zellij-style status bar
+    fn format_key(&self, key: &str, desc: &str) -> String {
+        if self.use_color {
+            format!(
+                "#[fg=yellow,bold]<{}>#[default] #[fg=white]{}#[default]",
+                key, desc
+            )
+        } else {
+            format!("<{}> {}", key, desc)
+        }
+    }
+
+    fn format_mode_header(&self, name: &str) -> String {
+        if self.use_color {
+            format!("#[bg=green,fg=black,bold] {} #[default]", name)
+        } else {
+            format!("[{}]", name)
+        }
+    }
+
+    /// Default: Zellij-style status bar
     pub fn format_zellij(&self) -> String {
         let prefix = if self.use_color {
             "#[bg=colour238,fg=green,bold] Ctrl + #[default]"
@@ -42,6 +60,87 @@ impl Formatter {
         format!("{}  {}", prefix, modes.join("  "))
     }
 
+    /// PANE mode status bar
+    pub fn format_pane_mode(&self) -> String {
+        let header = self.format_mode_header("PANE");
+        let keys = [
+            self.format_key("n", "Split→"),
+            self.format_key("d", "Split↓"),
+            self.format_key("x", "Close"),
+            self.format_key("f", "Full"),
+            self.format_key("hjkl", "Move"),
+            self.format_key("r", "Resize"),
+            self.format_key("Esc", "Back"),
+        ];
+        format!("{}  {}", header, keys.join("  "))
+    }
+
+    /// TAB mode status bar
+    pub fn format_tab_mode(&self) -> String {
+        let header = self.format_mode_header("TAB");
+        let keys = [
+            self.format_key("n", "New"),
+            self.format_key("x", "Close"),
+            self.format_key("r", "Rename"),
+            self.format_key("h/l", "←/→"),
+            self.format_key("1-9", "Select"),
+            self.format_key("Esc", "Back"),
+        ];
+        format!("{}  {}", header, keys.join("  "))
+    }
+
+    /// RESIZE mode status bar
+    pub fn format_resize_mode(&self) -> String {
+        let header = self.format_mode_header("RESIZE");
+        let keys = [
+            self.format_key("h", "←"),
+            self.format_key("j", "↓"),
+            self.format_key("k", "↑"),
+            self.format_key("l", "→"),
+            self.format_key("=", "Equal"),
+            self.format_key("Esc", "Back"),
+        ];
+        format!("{}  {}", header, keys.join("  "))
+    }
+
+    /// MOVE mode status bar
+    pub fn format_move_mode(&self) -> String {
+        let header = self.format_mode_header("MOVE");
+        let keys = [
+            self.format_key("h", "←"),
+            self.format_key("j", "↓"),
+            self.format_key("k", "↑"),
+            self.format_key("l", "→"),
+            self.format_key("Tab", "Next"),
+            self.format_key("Esc", "Back"),
+        ];
+        format!("{}  {}", header, keys.join("  "))
+    }
+
+    /// SESSION mode status bar
+    pub fn format_session_mode(&self) -> String {
+        let header = self.format_mode_header("SESSION");
+        let keys = [
+            self.format_key("d", "Detach"),
+            self.format_key("w", "List"),
+            self.format_key("r", "Rename"),
+            self.format_key("Esc", "Back"),
+        ];
+        format!("{}  {}", header, keys.join("  "))
+    }
+
+    /// Mode-specific status bar
+    pub fn format_mode_status(&self, mode: &str) -> String {
+        match mode {
+            "pane" => self.format_pane_mode(),
+            "tab" => self.format_tab_mode(),
+            "resize" => self.format_resize_mode(),
+            "move" => self.format_move_mode(),
+            "session" => self.format_session_mode(),
+            _ => self.format_zellij(),
+        }
+    }
+
     /// Popup用: 罫線付きの詳細表示
     pub fn format_popup(&self, mode: Mode) -> String {
         let category = mode.get_category();
@@ -49,17 +148,14 @@ impl Formatter {
 
         let mut lines = Vec::new();
 
-        // Top border with title
         let title = format!(" {} ", category.name);
         let padding = width - 2 - title.len();
         let left_pad = padding / 2;
         let right_pad = padding - left_pad;
         lines.push(format!("┌{}{}{}┐", "─".repeat(left_pad), title, "─".repeat(right_pad)));
 
-        // Empty line
         lines.push(format!("│{}│", " ".repeat(width - 2)));
 
-        // Shortcuts
         for shortcut in category.shortcuts {
             let key_display = format!("  {}  ", shortcut.key);
             let desc = shortcut.desc_long;
@@ -68,32 +164,20 @@ impl Formatter {
             lines.push(format!("│{}{}│", content, " ".repeat(padding.max(0))));
         }
 
-        // Empty line
         lines.push(format!("│{}│", " ".repeat(width - 2)));
 
-        // Footer
         let footer = "  Press q to close";
         let padding = width - 2 - footer.len();
         lines.push(format!("│{}{}│", footer, " ".repeat(padding)));
 
-        // Bottom border
         lines.push(format!("└{}┘", "─".repeat(width - 2)));
 
         lines.join("\n")
     }
 
-    /// 表示幅を計算（日本語文字は2幅）
     fn display_width(s: &str) -> usize {
         s.chars().map(|c| {
             if c.is_ascii() { 1 } else { 2 }
         }).sum()
-    }
-
-    /// 従来のformat関数
-    pub fn format(&self, mode: Mode) -> String {
-        match mode {
-            Mode::Default => self.format_zellij(),
-            _ => self.format_popup(mode),
-        }
     }
 }

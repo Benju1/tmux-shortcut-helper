@@ -1,51 +1,120 @@
 # tmux-shortcut-helper
 
-A lightweight tmux shortcut helper inspired by zellij's friendly UI.
+A lightweight tmux shortcut helper that brings zellij-style modal keybindings to tmux.
 
-Shows category buttons in the status bar, with detailed popups for each category.
+No more memorizing complex `Ctrl+b` combinations - just press `Ctrl+p` for pane operations, `Ctrl+t` for tabs, etc.
 
-## Status Bar
+## Features
+
+- **Zellij-style modal operation**: `Ctrl+key` to enter mode, `Esc` to exit
+- **Dynamic status bar**: Shows available shortcuts for current mode
+- **No dependencies**: Pure Rust, single binary
+- **Fast**: Instant response, minimal resource usage
+
+## Demo
 
 ```
-[^b]  <W> TAB  <Q> PANE  <S> SESS  <d> Detach  <?> Help
-```
+# Default status bar
+Ctrl +  <p> PANE  <t> TAB  <n> RESIZE  <h> MOVE  <s> SEARCH  <o> SESSION  <q> QUIT
 
-## Popup (e.g., Ctrl+b → Shift+Q)
-
-```
-┌─────────── PANE ───────────┐
-│                            │
-│  %  縦に分割               │
-│  "  横に分割               │
-│  x  閉じる                 │
-│  z  全画面切替             │
-│  o  次のペインへ           │
-│  hjkl  ペイン間移動        │
-│  HJKL  サイズ変更          │
-│                            │
-│  Press q to close          │
-└────────────────────────────┘
+# After pressing Ctrl+p (PANE mode)
+[PANE]  <n> Split→  <d> Split↓  <x> Close  <f> Full  <hjkl> Move  <r> Resize  <Esc> Back
 ```
 
 ## Installation
 
+### From crates.io
+
 ```bash
+cargo install tmux-shortcut-helper
+```
+
+### From source
+
+```bash
+git clone https://github.com/takahashinaoki/tmux-shortcut-helper
+cd tmux-shortcut-helper
 cargo install --path .
 ```
 
 ## Setup
 
-Add to `~/.tmux.conf`:
+Add to your `~/.tmux.conf`:
 
 ```bash
-# Status bar
-set -g status-right "#(tmux-shortcut-helper)"
-set -g status-right-length 80
+# ===========================================
+# tmux-shortcut-helper: zellij-style config
+# ===========================================
 
-# Popup keybindings
-bind W display-popup -E -w 35 -h 14 "tmux-shortcut-helper --popup tab"
-bind Q display-popup -E -w 35 -h 14 "tmux-shortcut-helper --popup pane"
-bind S display-popup -E -w 35 -h 12 "tmux-shortcut-helper --popup session"
+# Status bar
+set -g status-right "#(tmux-shortcut-helper --zellij)"
+set -g status-right-length 120
+
+# --- PANE mode (Ctrl+p) ---
+bind -n C-p set status-right '#(tmux-shortcut-helper --mode-status pane)' \; switch-client -T pane-mode
+bind -T pane-mode h select-pane -L \; switch-client -T pane-mode
+bind -T pane-mode j select-pane -D \; switch-client -T pane-mode
+bind -T pane-mode k select-pane -U \; switch-client -T pane-mode
+bind -T pane-mode l select-pane -R \; switch-client -T pane-mode
+bind -T pane-mode n split-window -h -c "#{pane_current_path}"
+bind -T pane-mode d split-window -v -c "#{pane_current_path}"
+bind -T pane-mode x confirm-before -p "Close pane? (y/n)" kill-pane
+bind -T pane-mode f resize-pane -Z
+bind -T pane-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T pane-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T pane-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+
+# --- TAB mode (Ctrl+t) ---
+bind -n C-t set status-right '#(tmux-shortcut-helper --mode-status tab)' \; switch-client -T tab-mode
+bind -T tab-mode n new-window -c "#{pane_current_path}"
+bind -T tab-mode x confirm-before -p "Close tab? (y/n)" kill-window
+bind -T tab-mode r command-prompt -I "#W" "rename-window '%%'"
+bind -T tab-mode h previous-window \; switch-client -T tab-mode
+bind -T tab-mode l next-window \; switch-client -T tab-mode
+bind -T tab-mode 1 select-window -t 1
+bind -T tab-mode 2 select-window -t 2
+bind -T tab-mode 3 select-window -t 3
+bind -T tab-mode 4 select-window -t 4
+bind -T tab-mode 5 select-window -t 5
+bind -T tab-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T tab-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T tab-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+
+# --- RESIZE mode (Ctrl+n) ---
+bind -n C-n set status-right '#(tmux-shortcut-helper --mode-status resize)' \; switch-client -T resize-mode
+bind -T resize-mode h resize-pane -L 5 \; switch-client -T resize-mode
+bind -T resize-mode j resize-pane -D 5 \; switch-client -T resize-mode
+bind -T resize-mode k resize-pane -U 5 \; switch-client -T resize-mode
+bind -T resize-mode l resize-pane -R 5 \; switch-client -T resize-mode
+bind -T resize-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T resize-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T resize-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+
+# --- MOVE mode (Ctrl+h) ---
+bind -n C-h set status-right '#(tmux-shortcut-helper --mode-status move)' \; switch-client -T move-mode
+bind -T move-mode h select-pane -L \; switch-client -T move-mode
+bind -T move-mode j select-pane -D \; switch-client -T move-mode
+bind -T move-mode k select-pane -U \; switch-client -T move-mode
+bind -T move-mode l select-pane -R \; switch-client -T move-mode
+bind -T move-mode Tab select-pane -t :.+
+bind -T move-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T move-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T move-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+
+# --- SESSION mode (Ctrl+o) ---
+bind -n C-o set status-right '#(tmux-shortcut-helper --mode-status session)' \; switch-client -T session-mode
+bind -T session-mode d detach-client
+bind -T session-mode w choose-tree -Zs
+bind -T session-mode r command-prompt -I "#S" "rename-session '%%'"
+bind -T session-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T session-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+bind -T session-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
+
+# --- SEARCH mode (Ctrl+s) ---
+bind -n C-s copy-mode \; send-keys ?
+
+# --- QUIT (Ctrl+q) ---
+bind -n C-q confirm-before -p "Detach from session? (y/n)" detach-client
 ```
 
 Reload config:
@@ -54,74 +123,28 @@ Reload config:
 tmux source-file ~/.tmux.conf
 ```
 
-## Usage
+## Keybindings
 
-### Status Bar Keys
+| Key | Mode | Description |
+|-----|------|-------------|
+| `Ctrl+p` | PANE | Pane operations (split, close, move, resize) |
+| `Ctrl+t` | TAB | Tab/window operations (new, close, rename, switch) |
+| `Ctrl+n` | RESIZE | Resize current pane |
+| `Ctrl+h` | MOVE | Move between panes |
+| `Ctrl+o` | SESSION | Session operations (detach, list, rename) |
+| `Ctrl+s` | SEARCH | Enter copy/search mode |
+| `Ctrl+q` | QUIT | Detach from session |
+| `Esc` | - | Return to normal mode |
 
-| Key | Action |
-|-----|--------|
-| `Ctrl+b` → `Shift+W` | Show TAB popup |
-| `Ctrl+b` → `Shift+Q` | Show PANE popup |
-| `Ctrl+b` → `Shift+S` | Show SESSION popup |
-| `Ctrl+b` → `d` | Detach from session |
-| `Ctrl+b` → `?` | Show tmux help |
-
-### CLI Options
+## CLI Options
 
 ```bash
-tmux-shortcut-helper                    # Status bar output
-tmux-shortcut-helper --popup pane       # Popup for pane operations
-tmux-shortcut-helper --popup tab        # Popup for tab operations
-tmux-shortcut-helper --popup session    # Popup for session operations
-tmux-shortcut-helper --prefix "^a"      # Custom prefix (for Ctrl+a users)
+tmux-shortcut-helper                    # Default zellij-style status bar
+tmux-shortcut-helper --mode-status pane # PANE mode status bar
+tmux-shortcut-helper --popup pane       # Popup display for pane shortcuts
 tmux-shortcut-helper --no-color         # Disable colors
 tmux-shortcut-helper --help             # Show help
 ```
-
-## Shortcut Reference
-
-### TAB (Window)
-
-| Key | Description |
-|-----|-------------|
-| `c` | New tab |
-| `n` | Next tab |
-| `p` | Previous tab |
-| `,` | Rename |
-| `&` | Close |
-| `w` | List all |
-| `0-9` | Select by number |
-
-### PANE
-
-| Key | Description |
-|-----|-------------|
-| `%` | Vertical split |
-| `"` | Horizontal split |
-| `x` | Close |
-| `z` | Toggle fullscreen |
-| `o` | Next pane |
-| `hjkl` | Navigate |
-| `HJKL` | Resize |
-
-### SESSION
-
-| Key | Description |
-|-----|-------------|
-| `d` | Detach |
-| `s` | List sessions |
-| `$` | Rename |
-| `(` `)` | Previous/Next session |
-
-### COPY MODE
-
-| Key | Description |
-|-----|-------------|
-| `[` | Enter copy mode |
-| `]` | Paste |
-| `Space` | Start selection |
-| `Enter` | Copy |
-| `q` | Quit |
 
 ## License
 

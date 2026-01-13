@@ -1,12 +1,14 @@
 pub struct Shortcut {
     pub key: &'static str,
+    #[allow(dead_code)]
     pub desc_short: &'static str,
     pub desc_long: &'static str,
 }
 
 pub struct Category {
     pub name: &'static str,
-    pub key: &'static str,  // trigger key for popup
+    #[allow(dead_code)]
+    pub key: &'static str,
     pub shortcuts: &'static [Shortcut],
 }
 
@@ -62,6 +64,7 @@ pub const COPY: Category = Category {
     ],
 };
 
+#[allow(dead_code)]
 pub const QUICK: Category = Category {
     name: "QUICK",
     key: "",

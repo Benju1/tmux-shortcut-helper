@@ -2,8 +2,14 @@
 name = "tmux-shortcut-helper"
 version = "0.1.0"
 edition = "2021"
-description = "A lightweight tmux shortcut helper like zellij"
+authors = ["takahashinaoki"]
+description = "A lightweight tmux shortcut helper with zellij-style keybindings"
 license = "MIT"
+repository = "https://github.com/takahashinaoki/tmux-shortcut-helper"
+homepage = "https://github.com/takahashinaoki/tmux-shortcut-helper"
+readme = "README.md"
+keywords = ["tmux", "terminal", "zellij", "shortcut", "helper"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 

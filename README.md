@@ -15,7 +15,7 @@ No more memorizing complex `Ctrl+b` combinations - just press `Ctrl+p` for pane 
 
 ```
 # Default status bar
-Ctrl +  <p> PANE  <t> TAB  <n> RESIZE  <h> MOVE  <s> SEARCH  <o> SESSION  <q> QUIT
+Ctrl +  <p> PANE  <t> TAB  <n> RESIZE  <h> MOVE  <y> COPY  <s> SEARCH  <o> SESSION  <q> QUIT
 
 # After pressing Ctrl+p (PANE mode)
 [PANE]  <n> Split→  <d> Split↓  <x> Close  <f> Full  <hjkl> Move  <r> Resize  <Esc> Back
@@ -101,6 +101,10 @@ bind -T move-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; 
 bind -T move-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T move-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 
+# --- COPY mode (Ctrl+y, auto-detected via hook) ---
+bind -n C-y copy-mode
+set-hook -gw pane-mode-changed 'if-shell -F "#{==:#{pane_mode},copy-mode}" "set status-right \"#(tmux-shortcut-helper --mode-status copy)\"" "set status-right \"#(tmux-shortcut-helper --zellij)\""'
+
 # --- SESSION mode (Ctrl+o) ---
 bind -n C-o set status-right '#(tmux-shortcut-helper --mode-status session)' \; switch-client -T session-mode
 bind -T session-mode d detach-client
@@ -131,6 +135,7 @@ tmux source-file ~/.tmux.conf
 | `Ctrl+t` | TAB | Tab/window operations (new, close, rename, switch) |
 | `Ctrl+n` | RESIZE | Resize current pane |
 | `Ctrl+h` | MOVE | Move between panes |
+| `Ctrl+y` | COPY | Enter copy mode (select, yank, scroll, search) |
 | `Ctrl+o` | SESSION | Session operations (detach, list, rename) |
 | `Ctrl+s` | SEARCH | Enter copy/search mode |
 | `Ctrl+q` | QUIT | Detach from session |

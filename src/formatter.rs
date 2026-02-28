@@ -139,7 +139,7 @@ impl Formatter {
             self.format_key("C-b/f", "Page"),
             self.format_key("g/G", "Top/End"),
             self.format_key("/ ?", "Search"),
-            self.format_key("q", "Back"),
+            self.format_key("Esc", "Back"),
         ];
         format!("{}  {}", header, keys.join("  "))
     }

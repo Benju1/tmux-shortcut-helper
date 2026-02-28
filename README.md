@@ -56,26 +56,26 @@ bind -T pane-mode h select-pane -L \; switch-client -T pane-mode
 bind -T pane-mode j select-pane -D \; switch-client -T pane-mode
 bind -T pane-mode k select-pane -U \; switch-client -T pane-mode
 bind -T pane-mode l select-pane -R \; switch-client -T pane-mode
-bind -T pane-mode n split-window -h -c "#{pane_current_path}"
-bind -T pane-mode d split-window -v -c "#{pane_current_path}"
-bind -T pane-mode x confirm-before -p "Close pane? (y/n)" kill-pane
-bind -T pane-mode f resize-pane -Z
+bind -T pane-mode n split-window -h -c "#{pane_current_path}" \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T pane-mode d split-window -v -c "#{pane_current_path}" \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T pane-mode x confirm-before -p "Close pane? (y/n)" kill-pane \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T pane-mode f resize-pane -Z \; set status-right '#(tmux-shortcut-helper --zellij)'
 bind -T pane-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T pane-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T pane-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 
 # --- TAB mode (Ctrl+t) ---
 bind -n C-t set status-right '#(tmux-shortcut-helper --mode-status tab)' \; switch-client -T tab-mode
-bind -T tab-mode n new-window -c "#{pane_current_path}"
-bind -T tab-mode x confirm-before -p "Close tab? (y/n)" kill-window
-bind -T tab-mode r command-prompt -I "#W" "rename-window '%%'"
+bind -T tab-mode n new-window -c "#{pane_current_path}" \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T tab-mode x confirm-before -p "Close tab? (y/n)" kill-window \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T tab-mode r command-prompt -I "#W" "rename-window '%%'" \; set status-right '#(tmux-shortcut-helper --zellij)'
 bind -T tab-mode h previous-window \; switch-client -T tab-mode
 bind -T tab-mode l next-window \; switch-client -T tab-mode
-bind -T tab-mode 1 select-window -t 1
-bind -T tab-mode 2 select-window -t 2
-bind -T tab-mode 3 select-window -t 3
-bind -T tab-mode 4 select-window -t 4
-bind -T tab-mode 5 select-window -t 5
+bind -T tab-mode 1 select-window -t 1 \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T tab-mode 2 select-window -t 2 \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T tab-mode 3 select-window -t 3 \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T tab-mode 4 select-window -t 4 \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T tab-mode 5 select-window -t 5 \; set status-right '#(tmux-shortcut-helper --zellij)'
 bind -T tab-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T tab-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T tab-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
@@ -96,7 +96,7 @@ bind -T move-mode h select-pane -L \; switch-client -T move-mode
 bind -T move-mode j select-pane -D \; switch-client -T move-mode
 bind -T move-mode k select-pane -U \; switch-client -T move-mode
 bind -T move-mode l select-pane -R \; switch-client -T move-mode
-bind -T move-mode Tab select-pane -t :.+
+bind -T move-mode Tab select-pane -t :.+ \; set status-right '#(tmux-shortcut-helper --zellij)'
 bind -T move-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T move-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T move-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
@@ -104,8 +104,8 @@ bind -T move-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switc
 # --- SESSION mode (Ctrl+o) ---
 bind -n C-o set status-right '#(tmux-shortcut-helper --mode-status session)' \; switch-client -T session-mode
 bind -T session-mode d detach-client
-bind -T session-mode w choose-tree -Zs
-bind -T session-mode r command-prompt -I "#S" "rename-session '%%'"
+bind -T session-mode w choose-tree -Zs \; set status-right '#(tmux-shortcut-helper --zellij)'
+bind -T session-mode r command-prompt -I "#S" "rename-session '%%'" \; set status-right '#(tmux-shortcut-helper --zellij)'
 bind -T session-mode Escape set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T session-mode Enter set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root
 bind -T session-mode q set status-right '#(tmux-shortcut-helper --zellij)' \; switch-client -T root

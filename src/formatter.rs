@@ -129,6 +129,21 @@ impl Formatter {
         format!("{}  {}", header, keys.join("  "))
     }
 
+    /// COPY mode status bar
+    pub fn format_copy_mode(&self) -> String {
+        let header = self.format_mode_header("COPY");
+        let keys = [
+            self.format_key("v", "Select"),
+            self.format_key("y", "Copy"),
+            self.format_key("C-u/d", "½Page"),
+            self.format_key("C-b/f", "Page"),
+            self.format_key("g/G", "Top/End"),
+            self.format_key("/ ?", "Search"),
+            self.format_key("q", "Back"),
+        ];
+        format!("{}  {}", header, keys.join("  "))
+    }
+
     /// Mode-specific status bar
     pub fn format_mode_status(&self, mode: &str) -> String {
         match mode {
@@ -137,6 +152,7 @@ impl Formatter {
             "resize" => self.format_resize_mode(),
             "move" => self.format_move_mode(),
             "session" => self.format_session_mode(),
+            "copy" => self.format_copy_mode(),
             _ => self.format_zellij(),
         }
     }

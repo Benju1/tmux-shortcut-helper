@@ -51,7 +51,7 @@ impl Formatter {
             self.format_mode_button("p", "PANE"),
             self.format_mode_button("t", "TAB"),
             self.format_mode_button("n", "RESIZE"),
-            self.format_mode_button("h", "MOVE"),
+            self.format_mode_button("b", "MOVE"),
             self.format_mode_button("s", "SEARCH"),
             self.format_mode_button("o", "SESSION"),
             self.format_mode_button("q", "QUIT"),
